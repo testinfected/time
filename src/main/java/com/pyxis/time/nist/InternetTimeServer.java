@@ -17,16 +17,15 @@ import java.util.concurrent.Executors;
 
 import static java.lang.String.format;
 
-@SuppressWarnings({"UnusedDeclaration"})
+/**
+ * Time code format is
+ * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
+ * see http://www.nist.gov/pml/div688/grp40/its.cfm
+ **/
 public class InternetTimeServer {
     private final int port;
     private final Executor executor = Executors.newSingleThreadExecutor();
 
-    /**
-     * Time code format is
-     * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
-     * see http://www.nist.gov/pml/div688/grp40/its.cfm
-     **/
     private static final TimeZone utc = TimeZone.getTimeZone("UTC");
     private static final String DATE_FORMAT = "yy-MM-dd";
     private static final String TIME_FORMAT = "HH:mm:ss";
@@ -35,6 +34,10 @@ public class InternetTimeServer {
     
     private ServerSocket server;
     private Clock internalClock = new SystemClock();
+
+    public static InternetTimeServer listeningOnPort(int port) {
+        return new InternetTimeServer(port);
+    }
 
     public InternetTimeServer(int port) {
         this.port = port;
@@ -65,8 +68,8 @@ public class InternetTimeServer {
         server.close();
     }
 
-    private void exceptionOccured(Exception e) {
-        // plug-in monitor to externalize how exception are handled
+    // TODO plug-in monitor to externalize how exception are handled
+    private void exceptionOccurred(Exception e) {
     }
 
     private void serveClients() {
@@ -74,7 +77,7 @@ public class InternetTimeServer {
             try {
                 respondTo(server.accept());
             } catch (IOException e) {
-                exceptionOccured(e);
+                exceptionOccurred(e);
             }
         }
     }
@@ -87,7 +90,7 @@ public class InternetTimeServer {
             writer.write(LINE_FEED);
             writer.flush();
         } catch (IOException e) {
-            exceptionOccured(e);
+            exceptionOccurred(e);
         } finally {
             closeSocket(client);
         }
@@ -108,6 +111,7 @@ public class InternetTimeServer {
         return server.isClosed();
     }
 
+    // TODO move time code logic to dialect
     public String timeCode() {
         return formatTimeCode(internalClock.now());
     }
@@ -119,7 +123,7 @@ public class InternetTimeServer {
     private static String time(Date pointInTime) {
         return using(TIME_FORMAT).format(pointInTime);
     }
-                                    
+
     private static String date(Date pointInTime) {
         return using(DATE_FORMAT).format(pointInTime);
     }
@@ -128,18 +132,6 @@ public class InternetTimeServer {
         DateFormat format = new SimpleDateFormat(pattern);
         format.setTimeZone(utc);
         return format;
-    }
-
-    public static InternetTimeServer listeningOnPort(int port) {
-        return new InternetTimeServer(port);
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port = Integer.parseInt(args[0]);
-        System.out.println("Listening on port " + port + "...");
-        final InternetTimeServer server = InternetTimeServer.listeningOnPort(port);
-        closeServerOnShutdown(server);
-        server.start();
     }
 
     private static void closeServerOnShutdown(final InternetTimeServer server) {
@@ -154,5 +146,13 @@ public class InternetTimeServer {
                 }
             }
         });
+    }
+
+    public static void main(String[] args) throws Exception {
+        int port = Integer.parseInt(args[0]);
+        System.out.println("Listening on port " + port + "...");
+        final InternetTimeServer server = InternetTimeServer.listeningOnPort(port);
+        closeServerOnShutdown(server);
+        server.start();
     }
 }

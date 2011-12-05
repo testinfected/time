@@ -16,13 +16,15 @@ import java.util.concurrent.Executors;
 
 import static java.lang.String.format;
 
-public class FrozenTimeServer {
+/**
+ * Time code format is
+ * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
+ * see http://www.nist.gov/pml/div688/grp40/its.cfm
+ **/
 
-    /**
-     * Time code format is
-     * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
-     * see http://www.nist.gov/pml/div688/grp40/its.cfm
-     **/
+// TODO This is a duplication of InternetTimeServer. Move time formatting logic to dialect
+// and get rid of this code
+public class FrozenTimeServer {
     private static final TimeZone utc = TimeZone.getTimeZone("UTC");
     private static final String DATE_FORMAT = "yy-MM-dd";
     private static final String TIME_FORMAT = "HH:mm:SS";
@@ -32,15 +34,17 @@ public class FrozenTimeServer {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ServerSocket server;
 
+    public static FrozenTimeServer atPointInTime(Date pointInTime) {
+        return at(response(pointInTime));
+    }
+
     public FrozenTimeServer(String output) {
         this.output = output;
     }
 
     public void start(int port) throws IOException {
         server = new ServerSocket(port);
-//        while (!server.isClosed()) {
-//             Socket socket = server.accept();
-        
+
         executor.submit(new Callable<Object>() {
             public Object call() throws Exception {
                 while (!server.isClosed()) {
@@ -67,10 +71,6 @@ public class FrozenTimeServer {
 
     public static FrozenTimeServer at(String serverOutput) {
         return new FrozenTimeServer(serverOutput);
-    }
-
-    public static FrozenTimeServer atPointInTime(Date pointInTime) {
-        return at(response(pointInTime));
     }
 
     private static String response(Date pointInTime) {

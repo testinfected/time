@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.Date;
 
-@SuppressWarnings({"UnusedDeclaration"})
 public class InternetTimeClock implements Clock {
     private final String host;
     private final int port;
