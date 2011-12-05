@@ -1,6 +1,6 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
-import com.pyxis.time.Clock;
+import org.testinfected.time.Clock;
 
 import java.io.BufferedReader;
 import java.io.IOException;

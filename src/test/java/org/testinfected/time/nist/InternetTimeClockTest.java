@@ -1,4 +1,4 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -8,12 +8,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testinfected.time.BrokenClock;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static com.pyxis.time.BrokenClock.clockStoppedAt;
-import static com.pyxis.time.builder.DateBuilder.aDate;
+import static org.testinfected.time.builder.DateBuilder.aDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -30,7 +30,7 @@ public class InternetTimeClockTest {
 
     @Before
     public void startTimeServer() throws IOException {
-        server.setInternalClock(clockStoppedAt(serverTime));
+        server.setInternalClock(BrokenClock.clockStoppedAt(serverTime));
         server.start();
     }
 

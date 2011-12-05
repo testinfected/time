@@ -1,4 +1,4 @@
-package com.pyxis.time;
+package org.testinfected.time;
 
 import java.util.Date;
 

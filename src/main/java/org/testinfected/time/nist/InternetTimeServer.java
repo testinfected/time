@@ -1,7 +1,7 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
-import com.pyxis.time.Clock;
-import com.pyxis.time.SystemClock;
+import org.testinfected.time.Clock;
+import org.testinfected.time.SystemClock;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;

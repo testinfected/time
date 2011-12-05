@@ -1,6 +1,6 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
-import com.pyxis.time.builder.DateBuilder;
+import org.testinfected.time.builder.DateBuilder;
 import org.junit.Test;
 
 import java.text.ParseException;

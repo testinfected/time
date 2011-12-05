@@ -1,4 +1,4 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
 import java.text.ParseException;
 import java.util.Date;

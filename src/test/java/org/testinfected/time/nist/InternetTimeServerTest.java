@@ -1,4 +1,4 @@
-package com.pyxis.time.nist;
+package org.testinfected.time.nist;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.*;
 
-import static com.pyxis.time.BrokenClock.clockStoppedAt;
-import static com.pyxis.time.builder.DateBuilder.aDate;
+import static org.testinfected.time.BrokenClock.clockStoppedAt;
+import static org.testinfected.time.builder.DateBuilder.aDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 

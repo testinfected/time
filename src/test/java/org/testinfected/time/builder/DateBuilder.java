@@ -1,4 +1,4 @@
-package com.pyxis.time.builder;
+package org.testinfected.time.builder;
 
 import java.util.Calendar;
 import java.util.Date;
