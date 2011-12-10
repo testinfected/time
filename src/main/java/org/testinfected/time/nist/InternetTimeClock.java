@@ -54,4 +54,18 @@ public class InternetTimeClock implements Clock {
     private void close(Socket socket) throws IOException {
         if (socket != null) socket.close();
     }
-}
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(String.format("Connecting to %s on port %d", host(args), port(args)));
+        final InternetTimeClock clock = new InternetTimeClock(host(args), port(args));
+        System.out.println("Current time is " + clock.now());
+    }
+
+    private static int port(String[] args) {
+        return Integer.parseInt(args[1]);
+    }
+
+    private static String host(String[] args) {
+        return args[0];
+    }
+                                  }
