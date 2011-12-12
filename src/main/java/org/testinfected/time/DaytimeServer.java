@@ -1,17 +1,12 @@
-package org.testinfected.time.nist;
+package org.testinfected.time;
 
-import org.testinfected.time.Clock;
-import org.testinfected.time.SystemClock;
+import org.testinfected.time.nist.NISTDialect;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -22,29 +17,30 @@ import static java.lang.String.format;
  * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
  * see http://www.nist.gov/pml/div688/grp40/its.cfm
  **/
-public class InternetTimeServer {
+public class DaytimeServer {
+    private static final String LINE_FEED = "\n";
+
     private final int port;
     private final Executor executor = Executors.newSingleThreadExecutor();
 
-    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
-    private static final String DATE_FORMAT = "yy-MM-dd";
-    private static final String TIME_FORMAT = "HH:mm:ss";
-    private static final String TIME_CODE_FORMAT = "JJJJJ %s %s TT L H msADV UTC(NIST) *";
-    private static final String LINE_FEED = "\n";
-    
     private ServerSocket server;
     private Clock internalClock = new SystemClock();
+    private DaytimeDialect dialect = NISTDialect.INSTANCE;
 
-    public static InternetTimeServer listeningOnPort(int port) {
-        return new InternetTimeServer(port);
+    public static DaytimeServer listeningOnPort(int port) {
+        return new DaytimeServer(port);
     }
 
-    public InternetTimeServer(int port) {
+    private DaytimeServer(int port) {
         this.port = port;
     }
 
     public void setInternalClock(Clock clock) {
         this.internalClock = clock;
+    }
+
+    public void speak(DaytimeDialect dialect) {
+        this.dialect = dialect;
     }
 
     public void start() throws IOException {
@@ -96,6 +92,10 @@ public class InternetTimeServer {
         }
     }
 
+    private String timeCode() {
+        return dialect.encode(internalClock.now());
+    }
+
     private void closeSocket(Socket socket) {
         try {
             socket.close();
@@ -111,48 +111,25 @@ public class InternetTimeServer {
         return server.isClosed();
     }
 
-    // TODO move time code logic to dialect
-    public String timeCode() {
-        return formatTimeCode(internalClock.now());
+    public static void main(String[] args) throws Exception {
+        int port = Integer.parseInt(args[0]);
+        System.out.println("Listening on port " + port + "...");
+        final DaytimeServer server = DaytimeServer.listeningOnPort(port);
+        closeServerOnShutdown(server);
+        server.start();
     }
 
-    private static String formatTimeCode(Date pointInTime) {
-        return format(TIME_CODE_FORMAT, date(pointInTime), time(pointInTime));
-    }
-
-    private static String time(Date pointInTime) {
-        return using(TIME_FORMAT).format(pointInTime);
-    }
-
-    private static String date(Date pointInTime) {
-        return using(DATE_FORMAT).format(pointInTime);
-    }
-
-    private static DateFormat using(String pattern) {
-        DateFormat format = new SimpleDateFormat(pattern);
-        format.setTimeZone(utc);
-        return format;
-    }
-
-    private static void closeServerOnShutdown(final InternetTimeServer server) {
+    private static void closeServerOnShutdown(final DaytimeServer server) {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
                     System.out.println("\nShutting down...");
                     server.stop();
-                    System.out.println("Bye.");
+                    System.out.println("Done.");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port = Integer.parseInt(args[0]);
-        System.out.println("Listening on port " + port + "...");
-        final InternetTimeServer server = InternetTimeServer.listeningOnPort(port);
-        closeServerOnShutdown(server);
-        server.start();
     }
 }

@@ -1,8 +1,15 @@
-package org.testinfected.time.nist;
+package org.testinfected.time;
 
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JMock;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.testinfected.time.DaytimeDialect;
+import org.testinfected.time.DaytimeServer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,16 +20,22 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.*;
 
-import static org.testinfected.time.BrokenClock.clockStoppedAt;
+import static org.testinfected.time.BrokenClock.stoppedAt;
 import static org.testinfected.time.builder.DateBuilder.aDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-public class InternetTimeServerTest {
+@RunWith(JMock.class)
+public class DaytimeServerTest {
 
+    Mockery context = new JUnit4Mockery();
+    DaytimeDialect serverDialect = context.mock(DaytimeDialect.class);
+
+    int TIMEOUT = 100;
     int serverPort = 10013;
-    InternetTimeServer server = InternetTimeServer.listeningOnPort(serverPort);
-    Date serverTime = aDate().onCalendar(2010, 10, 23).atTime(15, 15, 20).inZone("UTC").build();
+    DaytimeServer server = DaytimeServer.listeningOnPort(serverPort);
+    Date currentTime = aDate().build();
+    String timeCode = "current time";
 
     int clientCount = 25;
     ExecutorService clients = Executors.newCachedThreadPool();
@@ -30,7 +43,11 @@ public class InternetTimeServerTest {
     @Before
     public void
     startServer() throws IOException {
-        server.setInternalClock(clockStoppedAt(serverTime));
+        context.checking(new Expectations() {{
+            allowing(serverDialect).encode(currentTime); will(returnValue(timeCode));
+        }});
+        server.speak(serverDialect);
+        server.setInternalClock(stoppedAt(currentTime));
         server.start();
     }
 
@@ -44,9 +61,12 @@ public class InternetTimeServerTest {
     @Test
     public void
     providesCurrentTimeToClientBasedOnInternalClockTime() throws Exception {
-        Future<String> timeCode = clients.submit(new TimeRequest());
-        String response = waitFor(timeCode, 100);
-        assertThat("server response", response, equalTo("JJJJJ 10-10-23 15:15:20 TT L H msADV UTC(NIST) *"));
+        String response = waitFor(fetchTimeCode(), TIMEOUT);
+        assertThat("time code", response, equalTo(timeCode));
+    }
+
+    private Future<String> fetchTimeCode() {
+        return clients.submit(new TimeRequest());
     }
 
     private String waitFor(Future<String> timeCode, int timeout) throws Exception {
@@ -58,7 +78,7 @@ public class InternetTimeServerTest {
     supportsSeveralClientsAtTheSameTime() throws Exception {
         Collection<Future<String>> timeCodes = new ArrayList<Future<String>>();
         for (int i = 1; i <= clientCount; i++) {
-            timeCodes.add(clients.submit(new TimeRequest()));
+            timeCodes.add(fetchTimeCode());
         }
 
         assertThat("clients served", clientsServed(timeCodes), equalTo(clientCount));
@@ -68,7 +88,7 @@ public class InternetTimeServerTest {
         int requestsServed = 0;
         for (Future<String> timeCode : timeCodes) {
             try {
-                waitFor(timeCode, 100 * clientCount);
+                waitFor(timeCode, TIMEOUT * clientCount);
                 requestsServed++;
             } catch (TimeoutException skip) {
             }

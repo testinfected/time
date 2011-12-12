@@ -1,7 +1,7 @@
 package org.testinfected.time.nist;
 
-import org.testinfected.time.builder.DateBuilder;
 import org.junit.Test;
+import org.testinfected.time.DaytimeDialect;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -9,16 +9,23 @@ import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.testinfected.time.builder.DateBuilder.aDate;
 
 public class NISTDialectTest {
 
-    NISTDialect dialect = new NISTDialect();
+    DaytimeDialect dialect = NISTDialect.INSTANCE;
+
+    String timeCode = "55488 10-10-19 16:03:15 20 0 0 448.0 UTC(NIST) *";
     TimeZone utc = TimeZone.getTimeZone("UTC");
-    String serverOutput = "55488 10-10-19 16:03:15 20 0 0 448.0 UTC(NIST) *";
+    Date currentTime = aDate().onCalendar(2010, 10, 19).atTime(16, 3, 15).in(utc).build();
 
     @Test public void
-    translatesOutputToPointInUTCTime() throws ParseException {
-        Date serverTime = DateBuilder.aDate().onCalendar(2010, 10, 19).atTime(16, 3, 15).in(utc).build();
-        assertThat("server time", dialect.translate(serverOutput), equalTo(serverTime));
+    decodesTimeCodeToDateInUTC() throws ParseException {
+        assertThat("time", dialect.decode(timeCode), equalTo(currentTime));
+    }
+
+    @Test public void
+    encodesDateAsTimeCode() throws ParseException {
+        assertThat("time code", dialect.encode(currentTime), equalTo("JJJJJ 10-10-19 16:03:15 TT L H msADV UTC(NIST) *"));
     }
 }
