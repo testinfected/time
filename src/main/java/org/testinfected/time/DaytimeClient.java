@@ -1,7 +1,5 @@
 package org.testinfected.time;
 
-import org.testinfected.time.nist.NISTDialect;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,18 +56,4 @@ public class DaytimeClient implements Clock {
     private void close(Socket connection) throws IOException {
         if (connection != null) connection.close();
     }
-
-    public static void main(String[] args) throws Exception {
-        System.out.println(String.format("Connecting to daytime server at %s on port %d", host(args), port(args)));
-        DaytimeClient clock = new DaytimeClient(host(args), port(args), NISTDialect.INSTANCE);
-        System.out.println("Current time is " + clock.now());
-    }
-
-    private static int port(String[] args) {
-        return Integer.parseInt(args[1]);
-    }
-
-    private static String host(String[] args) {
-        return args[0];
-    }
-                                  }
+}

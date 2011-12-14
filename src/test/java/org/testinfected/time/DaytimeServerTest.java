@@ -33,7 +33,7 @@ public class DaytimeServerTest {
 
     int TIMEOUT = 100;
     int serverPort = 10013;
-    DaytimeServer server = DaytimeServer.listeningOnPort(serverPort);
+    DaytimeServer server = new DaytimeServer(serverPort, serverDialect);
     Date currentTime = aDate().build();
     String timeCode = "current time";
 
@@ -46,8 +46,7 @@ public class DaytimeServerTest {
         context.checking(new Expectations() {{
             allowing(serverDialect).encode(currentTime); will(returnValue(timeCode));
         }});
-        server.speak(serverDialect);
-        server.setInternalClock(stoppedAt(currentTime));
+        server.setInternalClock(BrokenClock.stoppedAt(currentTime));
         server.start();
     }
 

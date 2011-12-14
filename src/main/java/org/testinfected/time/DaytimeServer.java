@@ -12,35 +12,27 @@ import java.util.concurrent.Executors;
 
 import static java.lang.String.format;
 
-/**
- * Time code format is
- * JJJJJ YR-MO-DA HH:MM:SS TT L H msADV UTC(NIST) OTM
- * see http://www.nist.gov/pml/div688/grp40/its.cfm
- **/
 public class DaytimeServer {
     private static final String LINE_FEED = "\n";
 
     private final int port;
+    private final DaytimeDialect dialect;
     private final Executor executor = Executors.newSingleThreadExecutor();
 
     private ServerSocket server;
     private Clock internalClock = new SystemClock();
-    private DaytimeDialect dialect = NISTDialect.INSTANCE;
 
-    public static DaytimeServer listeningOnPort(int port) {
-        return new DaytimeServer(port);
+    public DaytimeServer(int port) {
+        this(port, NISTDialect.INSTANCE);
     }
 
-    private DaytimeServer(int port) {
+    public DaytimeServer(int port, DaytimeDialect dialect) {
         this.port = port;
+        this.dialect = dialect;
     }
 
     public void setInternalClock(Clock clock) {
         this.internalClock = clock;
-    }
-
-    public void speak(DaytimeDialect dialect) {
-        this.dialect = dialect;
     }
 
     public void start() throws IOException {
@@ -97,39 +89,11 @@ public class DaytimeServer {
     }
 
     private void closeSocket(Socket socket) {
-        try {
-            socket.close();
-        } catch (IOException ignored) {
-        }
+        try { socket.close(); } catch (IOException ignored) {}
     }
 
     private boolean shouldContinue() {
-        return !serverClosed();
+        return !server.isClosed();
     }
 
-    private boolean serverClosed() {
-        return server.isClosed();
-    }
-
-    public static void main(String[] args) throws Exception {
-        int port = Integer.parseInt(args[0]);
-        System.out.println("Listening on port " + port + "...");
-        final DaytimeServer server = DaytimeServer.listeningOnPort(port);
-        closeServerOnShutdown(server);
-        server.start();
-    }
-
-    private static void closeServerOnShutdown(final DaytimeServer server) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            public void run() {
-                try {
-                    System.out.println("\nShutting down...");
-                    server.stop();
-                    System.out.println("Done.");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
 }
