@@ -10,14 +10,12 @@ import java.net.Socket;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import static java.lang.String.format;
-
 public class DaytimeServer {
     private static final String LINE_FEED = "\n";
 
     private final int port;
     private final DaytimeDialect dialect;
-    private final Executor executor = Executors.newSingleThreadExecutor();
+    private final Executor executor = Executors.newCachedThreadPool();
 
     private ServerSocket server;
     private Clock internalClock = new SystemClock();
@@ -63,11 +61,19 @@ public class DaytimeServer {
     private void serveClients() {
         while (shouldContinue()) {
             try {
-                respondTo(server.accept());
+                serve(server.accept());
             } catch (IOException e) {
                 exceptionOccurred(e);
             }
         }
+    }
+
+    private void serve(final Socket client) {
+        executor.execute(new Runnable() {
+            public void run() {
+                respondTo(client);
+            }
+        });
     }
 
     private void respondTo(Socket client) {
@@ -95,5 +101,4 @@ public class DaytimeServer {
     private boolean shouldContinue() {
         return !server.isClosed();
     }
-
 }
