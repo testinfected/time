@@ -50,7 +50,7 @@ public class DaytimeServerTest {
     }
 
     @Test public void
-    providesTimeCodeOfCurrentTime() throws Exception {
+    providesTimeCodeBasedOnInternalClock() throws Exception {
         Execution<String> pending = fetchTimeCode();
         assertThat("time code", pending.getResult(timeout), equalTo(timeCode));
     }
