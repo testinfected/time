@@ -16,6 +16,7 @@ public class DaytimeServer {
     private final int port;
     private final DaytimeDialect dialect;
     private final Executor executor = Executors.newCachedThreadPool();
+    private final Announcer<ServerMonitor> monitors = Announcer.to(ServerMonitor.class);
 
     private ServerSocket server;
     private Clock internalClock = new SystemClock();
@@ -31,6 +32,14 @@ public class DaytimeServer {
 
     public void setInternalClock(Clock clock) {
         this.internalClock = clock;
+    }
+
+    public void addMonitor(ServerMonitor monitor) {
+        monitors.subscribe(monitor);
+    }
+
+    public void removeMonitor(ServerMonitor monitor) {
+        monitors.unsubscribe(monitor);
     }
 
     public void start() throws IOException {
@@ -54,8 +63,8 @@ public class DaytimeServer {
         server.close();
     }
 
-    // TODO plug-in monitor to externalize how exception are handled
-    private void exceptionOccurred(Exception e) {
+    private void reportException(Exception e) {
+        monitors.announce().exceptionOccurred(e);
     }
 
     private void serveClients() {
@@ -63,7 +72,7 @@ public class DaytimeServer {
             try {
                 serve(server.accept());
             } catch (IOException e) {
-                exceptionOccurred(e);
+                reportException(e);
             }
         }
     }
@@ -78,16 +87,21 @@ public class DaytimeServer {
 
     private void respondTo(Socket client) {
         try {
+            reportClientConnected(client);
             Writer writer = new OutputStreamWriter(client.getOutputStream());
             writer.write(LINE_FEED);
             writer.write(timeCode());
             writer.write(LINE_FEED);
             writer.flush();
         } catch (IOException e) {
-            exceptionOccurred(e);
+            reportException(e);
         } finally {
             closeSocket(client);
         }
+    }
+
+    private void reportClientConnected(Socket client) {
+        monitors.announce().clientConnected(client.getInetAddress());
     }
 
     private String timeCode() {
