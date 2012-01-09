@@ -17,7 +17,7 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.testinfected.time.lib.DateBuilder.aDate;
 
 @RunWith(JMock.class)
@@ -67,8 +67,8 @@ public class DaytimeServerTest {
 
     @Test public void
     providesTimeCodeBasedOnInternalClock() throws Exception {
-        Execution<String> pending = fetchTimeCode();
-        String timeCode = pending.getResult(timeout);
+        TaskList<String> pending = fetchTimeCode();
+        String timeCode = pending.getSingleResult(timeout);
 
         assertNoServerError();
         assertThat("time code", timeCode, equalTo(timeCode));
@@ -76,7 +76,7 @@ public class DaytimeServerTest {
 
     @Test public void
     supportsMultipleConcurrentClients() throws Exception {
-        Execution<String> pending = fetchTimeCode(clientCount);
+        TaskList<String> pending = fetchTimeCode(clientCount);
         int fulfilled = pending.await(timeout);
 
         assertNoServerError();
@@ -97,11 +97,11 @@ public class DaytimeServerTest {
         server.removeMonitor(monitor);
     }
 
-    private Execution<String> fetchTimeCode() throws InterruptedException {
+    private TaskList<String> fetchTimeCode() throws InterruptedException {
         return fetchTimeCode(1);
     }
 
-    private Execution<String> fetchTimeCode(int clientCount) throws InterruptedException {
+    private TaskList<String> fetchTimeCode(int clientCount) throws InterruptedException {
         return executor.spawn(new TimeRequest(serverHost, serverPort), clientCount);
     }
 

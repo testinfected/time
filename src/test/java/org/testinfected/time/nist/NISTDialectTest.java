@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.testinfected.time.lib.DateBuilder.aDate;
 
 public class NISTDialectTest {

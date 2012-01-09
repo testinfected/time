@@ -8,7 +8,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class Execution<T> {
+public class TaskList<T> {
 
     private final List<Future<T>> tasks = new ArrayList<Future<T>>();
 
@@ -24,7 +24,7 @@ public class Execution<T> {
         return results;
     }
 
-    public T getResult(long timeoutInMillis) throws ExecutionException, InterruptedException, TimeoutException {
+    public T getSingleResult(long timeoutInMillis) throws ExecutionException, InterruptedException, TimeoutException {
         return getResults(timeoutInMillis).iterator().next();
     }
 

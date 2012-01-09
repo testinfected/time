@@ -17,12 +17,12 @@ public class ParallelExecutor {
         this.executorService = Executors.newFixedThreadPool(threadCount);
     }
 
-    public <T> Execution<T> spawn(final Callable<T> task) {
+    public <T> TaskList<T> spawn(final Callable<T> task) {
         return spawn(task, 1);
     }
 
-    public <T> Execution<T> spawn(final Callable<T> task, int taskCount) {
-        final Execution<T> pending = new Execution<T>();
+    public <T> TaskList<T> spawn(final Callable<T> task, int taskCount) {
+        final TaskList<T> pending = new TaskList<T>();
 
         for (int i = 0; i < taskCount; i++) {
             pending.add(executorService.submit(task));

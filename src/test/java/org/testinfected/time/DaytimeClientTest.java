@@ -15,7 +15,7 @@ import java.util.Date;
 
 import static org.testinfected.time.lib.DateBuilder.aDate;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.CoreMatchers.equalTo;
 
 @RunWith(JMock.class)
 public class DaytimeClientTest {
