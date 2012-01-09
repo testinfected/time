@@ -8,15 +8,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testinfected.time.BrokenClock;
-import org.testinfected.time.DaytimeClient;
-import org.testinfected.time.DaytimeDialect;
-import org.testinfected.time.DaytimeServer;
+import org.testinfected.time.lib.BrokenClock;
 
 import java.io.IOException;
 import java.util.Date;
 
-import static org.testinfected.time.builder.DateBuilder.aDate;
+import static org.testinfected.time.lib.DateBuilder.aDate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 

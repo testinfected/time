@@ -1,4 +1,6 @@
-package org.testinfected.time;
+package org.testinfected.time.lib;
+
+import org.testinfected.time.Clock;
 
 import java.util.Date;
 

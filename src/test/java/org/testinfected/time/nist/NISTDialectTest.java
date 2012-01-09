@@ -9,7 +9,7 @@ import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.testinfected.time.builder.DateBuilder.aDate;
+import static org.testinfected.time.lib.DateBuilder.aDate;
 
 public class NISTDialectTest {
 

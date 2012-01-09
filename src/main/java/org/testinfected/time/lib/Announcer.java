@@ -1,4 +1,4 @@
-package org.testinfected.time;
+package org.testinfected.time.lib;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

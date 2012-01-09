@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testinfected.time.lib.BrokenClock;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -17,7 +18,7 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.testinfected.time.builder.DateBuilder.aDate;
+import static org.testinfected.time.lib.DateBuilder.aDate;
 
 @RunWith(JMock.class)
 public class DaytimeServerTest {

@@ -1,4 +1,4 @@
-package org.testinfected.time.builder;
+package org.testinfected.time.lib;
 
 import java.util.Calendar;
 import java.util.Date;

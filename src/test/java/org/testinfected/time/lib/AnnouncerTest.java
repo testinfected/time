@@ -1,4 +1,4 @@
-package org.testinfected.time;
+package org.testinfected.time.lib;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -6,6 +6,7 @@ import org.jmock.integration.junit4.JMock;
 import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testinfected.time.lib.Announcer;
 
 @RunWith(JMock.class)
 public class AnnouncerTest {
