@@ -10,7 +10,7 @@
         <version>7</version>
     </parent>
 
-    <groupId>org.testinfected</groupId>
+    <groupId>org.testinfected.time</groupId>
     <artifactId>time</artifactId>
     <packaging>jar</packaging>
     <name>Time</name>
