@@ -27,7 +27,7 @@
 
     <scm>
         <connection>scm:git:git://github.com/testinfected/time.git</connection>
-        <developerConnection>scm:git:git@github.com:testinfected/time.git</developerConnection>
+        <developerConnection>scm:hg:git+ssh://git@github.com:testinfected/time.git</developerConnection>
         <url>https://github.com/testinfected/time</url>
     </scm>
     <developers>
