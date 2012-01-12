@@ -12,7 +12,7 @@
     <artifactId>time</artifactId>
     <packaging>jar</packaging>
     <name>Time</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <description>Time server and client</description>
     <url>https://github.com/testinfected/time</url>
     <licenses>
