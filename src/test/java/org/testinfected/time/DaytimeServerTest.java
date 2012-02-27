@@ -45,6 +45,8 @@ public class DaytimeServerTest {
             serverError = e;
         }
         public void clientConnected(InetAddress clientAddress) {}
+
+        public void timeGiven(String timeCode) {}
     };
     ServerMonitor monitor = context.mock(ServerMonitor.class);
 
@@ -68,10 +70,10 @@ public class DaytimeServerTest {
     @Test public void
     providesTimeCodeBasedOnInternalClock() throws Exception {
         TaskList<String> pending = fetchTimeCode();
-        String timeCode = pending.getSingleResult(timeout);
+        String result = pending.getSingleResult(timeout);
 
         assertNoServerError();
-        assertThat("time code", timeCode, equalTo(timeCode));
+        assertThat("time code", result, equalTo(timeCode));
     }
 
     @Test public void
@@ -85,12 +87,37 @@ public class DaytimeServerTest {
 
     @Test public void
     notifiesWhenClientsConnect() throws Exception {
+        ignoreTimeNotification();
         context.checking(new Expectations() {{
             oneOf(monitor).clientConnected(with(host(localhost)));
+            allowing(monitor).timeGiven(with(any(String.class)));
         }});
         server.addMonitor(monitor);
         fetchTimeCode().await(timeout);
         assertNoServerError();
+    }
+
+    private void ignoreTimeNotification() {
+        context.checking(new Expectations() {{
+            allowing(monitor).timeGiven(with(any(String.class)));
+        }});
+    }
+
+    @Test public void
+    notifiesWhenTimeRequestFulfils() throws Exception {
+        ignoreClientNotification();
+        context.checking(new Expectations() {{
+            oneOf(monitor).timeGiven(with(timeCode));
+        }});
+        server.addMonitor(monitor);
+        fetchTimeCode().await(timeout);
+        assertNoServerError();
+    }
+
+    private void ignoreClientNotification() {
+        context.checking(new Expectations() {{
+            allowing(monitor).clientConnected(with(any(InetAddress.class)));
+        }});
     }
 
     private void allowExceptionOnStop(ServerMonitor monitor) {

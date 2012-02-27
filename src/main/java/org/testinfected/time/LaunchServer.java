@@ -1,6 +1,7 @@
 package org.testinfected.time;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 public final class LaunchServer {
 
@@ -8,6 +9,19 @@ public final class LaunchServer {
         int port = port(args);
         System.out.println("Listening on port " + port + "...");
         final DaytimeServer server = new DaytimeServer(port);
+        server.addMonitor(new ServerMonitor() {
+            @Override public void clientConnected(InetAddress clientAddress) {
+                System.out.println(clientAddress.getHostAddress() + " has requested time");
+            }
+
+            @Override public void timeGiven(String timeCode) {
+                System.out.println("Current time is " + timeCode);
+            }
+
+            @Override public void exceptionOccurred(Exception e) {
+                e.printStackTrace(System.err);
+            }
+        });
         stopOnShutdown(server);
         server.start();
     }

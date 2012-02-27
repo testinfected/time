@@ -95,11 +95,16 @@ public class DaytimeServer {
             writer.write(timeCode());
             writer.write(LINE_FEED);
             writer.flush();
+            reportTimeGiven(timeCode());
         } catch (IOException e) {
             reportException(e);
         } finally {
             closeSocket(client);
         }
+    }
+
+    private void reportTimeGiven(String timeCode) {
+        monitors.announce().timeGiven(timeCode);
     }
 
     private void reportClientConnected(Socket client) {
