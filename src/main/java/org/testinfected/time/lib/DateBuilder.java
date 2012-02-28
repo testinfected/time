@@ -16,10 +16,14 @@ public class DateBuilder {
     private int minute;
     private int second;
     private int millisecond;
-
+    
     public static DateBuilder aDate() {
         DateBuilder builder = new DateBuilder();
         return builder.inMillis(System.currentTimeMillis());
+    }
+
+    public static DateBuilder calendarDate(int year, int month, int day) {
+        return aDate().onCalendar(year, month, day);
     }
 
     public DateBuilder at(int year, int month, int day, int hour, int minute, int second) {
