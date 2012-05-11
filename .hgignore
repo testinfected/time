@@ -4,3 +4,4 @@ syntax: glob
 *.ipr
 *.iws
 target
+reports
