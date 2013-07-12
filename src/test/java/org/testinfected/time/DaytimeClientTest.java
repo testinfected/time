@@ -53,6 +53,5 @@ public class DaytimeClientTest {
         Date now = clock.now();
         assertThat("current time", now, equalTo(currentTime));
     }
-
 }
 

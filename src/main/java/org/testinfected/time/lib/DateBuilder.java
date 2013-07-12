@@ -6,7 +6,7 @@ import java.util.TimeZone;
 
 public class DateBuilder {
 
-    private TimeZone gmt = TimeZone.getTimeZone("Universal");
+    private TimeZone gmt = TimeZone.getTimeZone("GMT");
 
     private TimeZone timeZone = gmt;
     private int year;
@@ -63,9 +63,8 @@ public class DateBuilder {
     }
 
     public DateBuilder inMillis(long millis) {
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(timeZone);
         calendar.setTimeInMillis(millis);
-        timeZone = calendar.getTimeZone();
         year = calendar.get(Calendar.YEAR);
         month = calendar.get(Calendar.MONTH) + 1;
         day = calendar.get(Calendar.DATE);
