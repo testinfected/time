@@ -1,6 +1,3 @@
-require 'buildr/java/cobertura'
-require 'buildr-dependency-extensions'
-
 HAMCREST = group('hamcrest-core', 'hamcrest-library', :under => 'org.hamcrest', :version => '1.3.RC2')
 
 define 'time', :group => 'org.testinfected.time', :version => '1.1-SNAPSHOT' do
