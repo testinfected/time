@@ -1,8 +1,6 @@
 # This project requires the following ruby gems, buildr addons
 gems:
-  # Enhance pom generation by adding dependencies
-  - buildr-dependency-extensions
-  
+
 repositories:
   remote: 
     - http://repo1.maven.org/maven2
