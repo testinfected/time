@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/testinfected/time.png?branch=master)](https://travis-ci.org/testinfected/time)
